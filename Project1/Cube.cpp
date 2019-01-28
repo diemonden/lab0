@@ -1,6 +1,5 @@
 #include "Cube.h"
 #include <iostream>
-#include <string>
 
 TriangleSoup cubeMesh(12);
 STLParser obj;

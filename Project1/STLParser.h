@@ -3,7 +3,9 @@
 #include <vector>
 #include <string>
 
-struct Vec { double x, y, z; };
+struct Vec { 
+	double x, y, z; 
+};
 
 struct Facet
 {

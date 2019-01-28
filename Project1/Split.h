@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include "Parser.h"
+#include "STLParser.h"
 #include "Command.h"
 #include <map>
 
