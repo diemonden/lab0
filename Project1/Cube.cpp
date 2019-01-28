@@ -2,7 +2,7 @@
 #include <iostream>
 
 TriangleSoup cubeMesh(12);
-STLParser obj;
+STLParser cube;
 
 const std::string & Cube::getName() const {
 	return *(new std::string("Cube"));
@@ -16,7 +16,7 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 	
 	double x = atof(args.find("origin")->second.c_str());
 	double y = atof(strchr(args.find("origin")->second.c_str(),' '));	
-	double z = atof(strchr(args.find("origin")->second.c_str(), ' ')+4);
+	double z = atof(strchr(args.find("origin")->second.c_str()+1, ' '));
 
 	std::string filepath = args.find("filepath")->second;
 	cubeMesh =
@@ -35,7 +35,7 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 		{ {{x+L,y,z},		{x+L,y,z+L},	{x,y,z}},		{0,0,0} },
 		{ {{x,y,z},			{x+L,y,z+L},	{x,y,z+L}},		{0,0,0} }
 	};
-	obj.write(cubeMesh, "C:\\Users\\mc dondo\\3D Objects\\cube.stl");// вставить переменную
+	cube.write(cubeMesh, "C:\\Users\\mc dondo\\3D Objects\\cube.stl");// вставить переменную
 	system("pause");
 	return 0;
 }
