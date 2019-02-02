@@ -3,7 +3,61 @@
 
 TriangleSoup sphereMesh;
 STLParser sphere;
+/*
+void subdivide(const Facet &v1, const Facet &v2, const Facet &v3, TriangleSoup &sphere_points, const unsigned int depth) {
+	if (depth == 0) {
+		sphere_points.push_back(v1);
+		sphere_points.push_back(v2);
+		sphere_points.push_back(v3);
+		return;
+	}
+	//const Vec v12 = (v1 + v2).norm();
+	const Facet v12 = { v1.pos->x + v2.pos->x,  v1.pos->y + v2.pos->y, v1.pos->z + v2.pos->z };
+	const Facet v23 = { v2.pos->x + v3.pos->x,  v2.pos->y + v3.pos->y, v2.pos->z + v3.pos->z };
+	const Facet v31 = { v1.pos->x + v3.pos->x,  v1.pos->y + v3.pos->y, v1.pos->z + v3.pos->z };
+	subdivide(v1, v12, v31, sphere_points, depth - 1);
+	subdivide(v2, v23, v12, sphere_points, depth - 1);
+	subdivide(v3, v31, v23, sphere_points, depth - 1);
+	subdivide(v12, v23, v31, sphere_points, depth - 1);
+}*/
+const Vec nn = { 0,0,0 };
 
+Vec norm(Vec v) {
+	double d = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	v.x /= d; v.y /= d; v.z /= d;
+	return v;
+}
+void subdivide(const Vec &v1, const Vec &v2, const Vec &v3, TriangleSoup &sphere_points, const unsigned int depth) {
+	if (depth == 0) {
+		sphere_points.push_back({ {v1,v2,v3}, nn });
+		return;
+	}
+	const Vec v12 = norm({ v1.x + v2.x,  v1.y + v2.y, v1.z + v2.z });
+	const Vec v23 = norm({ v2.x + v3.x,  v2.y + v3.y, v2.z + v3.z });
+	const Vec v31 = norm({ v3.x + v1.x,  v3.y + v1.y, v3.z + v1.z });
+	
+	subdivide(v1, v12, v31, sphere_points, depth - 1);
+	subdivide(v2, v23, v12, sphere_points, depth - 1);
+	subdivide(v3, v31, v23, sphere_points, depth - 1);
+	subdivide(v12, v23, v31, sphere_points, depth - 1);
+}
+void initialize_sphere(TriangleSoup &sphere_points, const unsigned int depth) {
+	const double X = 0.525731112119133606;
+	const double Z = 0.850650808352039932;
+	const Vec vdata[12] = {
+		{-X, 0.0, Z}, { X, 0.0, Z }, { -X, 0.0, -Z }, { X, 0.0, -Z },
+		{ 0.0, Z, X }, { 0.0, Z, -X }, { 0.0, -Z, X }, { 0.0, -Z, -X },
+		{ Z, X, 0.0 }, { -Z, X, 0.0 }, { Z, -X, 0.0 }, { -Z, -X, 0.0 }
+	};
+	int tindices[20][3] = {
+		{0, 4, 1}, { 0, 9, 4 }, { 9, 5, 4 }, { 4, 5, 8 }, { 4, 8, 1 },
+		{ 8, 10, 1 }, { 8, 3, 10 }, { 5, 3, 8 }, { 5, 2, 3 }, { 2, 7, 3 },
+		{ 7, 10, 3 }, { 7, 6, 10 }, { 7, 11, 6 }, { 11, 0, 6 }, { 0, 1, 6 },
+		{ 6, 1, 10 }, { 9, 0, 11 }, { 9, 11, 2 }, { 9, 2, 5 }, { 7, 2, 11 }
+	};
+	for (int i = 0; i < 20; i++)
+		subdivide(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], sphere_points, depth);
+}
 const std::string & Sphere::getName() const {
 	return *(new std::string("Sphere"));
 }
@@ -12,14 +66,21 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	for (auto it = args.begin(); it != args.end(); ++it) {
 		std::cout << it->first << " : " << it->second << std::endl;
 	}
-	
+
 	double R = stod(args.find("R")->second);
 
 	double x = atof(args.find("origin")->second.c_str());
 	double y = atof(strchr(args.find("origin")->second.c_str(), ' '));
-	double z = atof(strchr(args.find("origin")->second.c_str()+1, ' '));
+	double z = atof(strchr(args.find("origin")->second.c_str() + 1, ' '));
+	Vec CENTER = { x,y,z };
 
 	std::string filepath = args.find("filepath")->second;
+
+	initialize_sphere(sphereMesh, 4);
+	for (const Facet &point : sphereMesh)
+		//const Vec point_tmp = point * R + CENTER   //перегрузить +(век,век) и *(век,скал€р)
+	    const Facet point_tmp = { { point.pos->x * R + CENTER.x, point.pos->y * R + CENTER.y, point.pos->z * R + CENTER.z }, nn };
+		
 	
 	//https://stackoverflow.com/questions/17705621/algorithm-for-a-geodesic-sphere
 	//http://www.hugi.scene.org/online/coding/hugi%2027%20-%20coding%20corner%20polaris%20sphere%20tessellation%20101.htm
@@ -29,4 +90,5 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	system("pause");
 	return 0;
 }
+
 
