@@ -1,8 +1,5 @@
 #pragma once
-#include "Parser.h"
-#include "STLParser.h"
 #include "Command.h"
-#include <string>
 
 class Sphere : public Command
 {

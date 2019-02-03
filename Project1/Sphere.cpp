@@ -3,28 +3,12 @@
 
 TriangleSoup sphereMesh;
 STLParser sphere;
-/*
-void subdivide(const Facet &v1, const Facet &v2, const Facet &v3, TriangleSoup &sphere_points, const unsigned int depth) {
-	if (depth == 0) {
-		sphere_points.push_back(v1);
-		sphere_points.push_back(v2);
-		sphere_points.push_back(v3);
-		return;
-	}
-	//const Vec v12 = (v1 + v2).norm();
-	const Facet v12 = { v1.pos->x + v2.pos->x,  v1.pos->y + v2.pos->y, v1.pos->z + v2.pos->z };
-	const Facet v23 = { v2.pos->x + v3.pos->x,  v2.pos->y + v3.pos->y, v2.pos->z + v3.pos->z };
-	const Facet v31 = { v1.pos->x + v3.pos->x,  v1.pos->y + v3.pos->y, v1.pos->z + v3.pos->z };
-	subdivide(v1, v12, v31, sphere_points, depth - 1);
-	subdivide(v2, v23, v12, sphere_points, depth - 1);
-	subdivide(v3, v31, v23, sphere_points, depth - 1);
-	subdivide(v12, v23, v31, sphere_points, depth - 1);
-}*/
+
 const Vec nn = { 0,0,0 };
 
 Vec norm(Vec v) {
 	double d = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	v.x /= d; v.y /= d; v.z /= d;
+	v /= d;
 	return v;
 }
 void subdivide(const Vec &v1, const Vec &v2, const Vec &v3, TriangleSoup &sphere_points, const unsigned int depth) {
@@ -32,9 +16,9 @@ void subdivide(const Vec &v1, const Vec &v2, const Vec &v3, TriangleSoup &sphere
 		sphere_points.push_back({ {v1,v2,v3}, nn });
 		return;
 	}
-	const Vec v12 = norm({ v1.x + v2.x,  v1.y + v2.y, v1.z + v2.z });
-	const Vec v23 = norm({ v2.x + v3.x,  v2.y + v3.y, v2.z + v3.z });
-	const Vec v31 = norm({ v3.x + v1.x,  v3.y + v1.y, v3.z + v1.z });
+	const Vec v12 = norm(v1+v2);
+	const Vec v23 = norm(v2+v3);
+	const Vec v31 = norm(v3+v1);
 	
 	subdivide(v1, v12, v31, sphere_points, depth - 1);
 	subdivide(v2, v23, v12, sphere_points, depth - 1);
@@ -77,11 +61,8 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	std::string filepath = args.find("filepath")->second;
 
 	initialize_sphere(sphereMesh, 4);
-	for (const Facet &point : sphereMesh)
-		//const Vec point_tmp = point * R + CENTER   //перегрузить +(век,век) и *(век,скал€р)
-	    const Facet point_tmp = { { point.pos->x * R + CENTER.x, point.pos->y * R + CENTER.y, point.pos->z * R + CENTER.z }, nn };
+	scale(sphereMesh, CENTER, R);
 		
-	
 	//https://stackoverflow.com/questions/17705621/algorithm-for-a-geodesic-sphere
 	//http://www.hugi.scene.org/online/coding/hugi%2027%20-%20coding%20corner%20polaris%20sphere%20tessellation%20101.htm
 	//http://www.opengl.org.ru/docs/pg/0208.html

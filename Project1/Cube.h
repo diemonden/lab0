@@ -1,8 +1,5 @@
 #pragma once
 #include "Command.h"
-#include <string>
-#include "Parser.h"
-#include "STLParser.h"
 
 class Cube : public Command
 {
