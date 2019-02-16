@@ -1,11 +1,6 @@
 #include "Cube.h"
 #include <iostream>
 
-TriangleSoup cubeMesh;
-STLParser cube;
-
-
-
 const std::string & Cube::getName() const {
 	return *(new std::string("Cube"));
 }
@@ -16,11 +11,14 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 	}	
 	double L = stod(args.find("L")->second);
 	
-	double x = atof(args.find("origin")->second.c_str());
-	double y = atof(strchr(args.find("origin")->second.c_str(),' '));	
-	double z = atof(strchr(args.find("origin")->second.c_str()+1, ' '));
-	Vec CENTER = { x,y,z };
+	Vec origin = { atof(args.find("origin")->second.c_str()) ,
+				   atof(strchr(args.find("origin")->second.c_str(), ' ')) ,
+				   atof(strchr(args.find("origin")->second.c_str() + 1, ' '))
+	};
+
 	std::string filepath = args.find("filepath")->second;
+	TriangleSoup cubeMesh;
+	STLParser cube;
 	cubeMesh =
 		/*
 	{ 
@@ -53,7 +51,7 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 		{ {{1,0,0},		{1,0,1},	{0,0,0}},		{0,0,0} },
 		{ {{0,0,0},		{1,0,1},	{0,0,1}},		{0,0,0} }
 	};
-	scale(cubeMesh, CENTER, L);		
+	scale(cubeMesh, origin, L);		
 	cube.write(cubeMesh, "C:\\Users\\mc dondo\\3D Objects\\cube.stl");// вставить переменную
 	system("pause");
 	return 0;

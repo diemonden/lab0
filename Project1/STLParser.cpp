@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-
+#include <string>
 Vec operator+(const Vec &v1, const Vec &v2) {
 	return Vec(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
@@ -30,3 +30,31 @@ void STLParser::write(const TriangleSoup& triangleSoup, const std::string filena
 		fout << "endsolid" << std::endl;
 	fout.close();
 };
+
+TriangleSoup STLParser::read(const std::string& filename) {
+	TriangleSoup Mesh;	
+	std::ifstream in(filename);
+	Vec v1,v2,v3,n;
+	int i;
+		while (!in.eof()) {
+			std::string line;
+			in >> line;
+			if (line == "normal") {
+				i = 0;
+				in >> n.x >> n.y >> n.z;				
+			}	
+			if (line == "vertex") {
+				i++;
+				if (i == 1) 
+					in >> v1.x >> v1.y >> v1.z;				
+				if (i == 2)
+					in >> v2.x >> v2.y >> v2.z;
+				if (i == 3) {
+					in >> v3.x >> v3.y >> v3.z;
+					Mesh.push_back({ {v1,v2,v3}, n });
+				}
+			}
+		}	
+	in.close();
+	return Mesh;
+}

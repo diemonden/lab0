@@ -1,9 +1,6 @@
 #include "Sphere.h"
 #include <iostream>
 
-TriangleSoup sphereMesh;
-STLParser sphere;
-
 const Vec nn = { 0,0,0 };
 
 Vec norm(Vec v) {
@@ -53,12 +50,15 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 
 	double R = stod(args.find("R")->second);
 
-	double x = atof(args.find("origin")->second.c_str());
-	double y = atof(strchr(args.find("origin")->second.c_str(), ' '));
-	double z = atof(strchr(args.find("origin")->second.c_str() + 1, ' '));
-	Vec CENTER = { x,y,z };
+	Vec CENTER = { atof(args.find("origin")->second.c_str()) ,
+				   atof(strchr(args.find("origin")->second.c_str(), ' ')) ,
+				   atof(strchr(args.find("origin")->second.c_str() + 1, ' '))
+	};
 
 	std::string filepath = args.find("filepath")->second;
+
+	TriangleSoup sphereMesh;
+	STLParser sphere;
 
 	initialize_sphere(sphereMesh, 4);
 	scale(sphereMesh, CENTER, R);
