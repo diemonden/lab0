@@ -49,14 +49,22 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	}
 
 	double R = stod(args.find("R")->second);
-
+	if (R <= 0) {
+		std::cout << "error #1: Radius <= 0" << std::endl;
+		system("pause");
+		return 1;
+	}
 	Vec CENTER = { atof(args.find("origin")->second.c_str()) ,
 				   atof(strchr(args.find("origin")->second.c_str(), ' ')) ,
 				   atof(strchr(args.find("origin")->second.c_str() + 1, ' '))
 	};
 
 	std::string filepath = args.find("filepath")->second;
-
+	if (_access(filepath.substr(0, filepath.find_last_of('\\')).c_str(), 2) == -1) {
+		std::cout << "error #2: filepath is incorrect" << std::endl;
+		system("pause");
+		return 2;
+	}
 	TriangleSoup sphereMesh;
 	STLParser sphere;
 
@@ -67,7 +75,9 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	//http://www.hugi.scene.org/online/coding/hugi%2027%20-%20coding%20corner%20polaris%20sphere%20tessellation%20101.htm
 	//http://www.opengl.org.ru/docs/pg/0208.html
 	sphere.write(sphereMesh, "C:\\Users\\mc dondo\\3D Objects\\sphere.stl");// вставить переменную
-	
+	std::cout << "A tessellated sphere is created with the radius "<< R 
+		<< " at the point (" << CENTER.x << "," << CENTER.y << "," << CENTER.z
+		<< "), and is written to an ASCII STL file with the full path: " << filepath << std::endl;
 	system("pause");
 	return 0;
 }

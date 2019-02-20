@@ -4,7 +4,7 @@
 #include <map> 
 #include "Parser.h"
 #include "STLParser.h"
-
+#include <io.h>
 class Command
 {
 public:

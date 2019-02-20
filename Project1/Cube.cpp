@@ -1,6 +1,5 @@
 #include "Cube.h"
 #include <iostream>
-
 const std::string & Cube::getName() const {
 	return *(new std::string("Cube"));
 }
@@ -10,33 +9,25 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 		std::cout << it->first << " : " << it->second << std::endl;
 	}	
 	double L = stod(args.find("L")->second);
-	
+	if (L <= 0) { 		
+		std::cout << "error #1: Length <= 0" << std::endl;
+		system("pause");
+		return 1; }
+
 	Vec origin = { atof(args.find("origin")->second.c_str()) ,
 				   atof(strchr(args.find("origin")->second.c_str(), ' ')) ,
 				   atof(strchr(args.find("origin")->second.c_str() + 1, ' '))
 	};
 
 	std::string filepath = args.find("filepath")->second;
+
+	if (_access(filepath.substr(0, filepath.find_last_of('\\')).c_str(),2) == -1) {
+		std::cout << "error #2: filepath is incorrect" << std::endl; 
+		system("pause");
+		return 2; }
 	TriangleSoup cubeMesh;
 	STLParser cube;
 	cubeMesh =
-		/*
-	{ 
-		//     x                y               z              n
-		{ {{x,y+L,z+L},		{x,y+L,z},		{x,y,z+L}},		{0,0,0} },
-		{ {{x,y,z+L},		{x,y+L,z},		{x,y,z}},		{0,0,0} },
-		{ {{x+L,y+L,z+L},	{x,y+L,z+L},	{x+L,y,z+L}},	{0,0,0} },
-		{ {{x+L,y,z+L},		{x,y+L,z+L},	{x,y,z+L}},		{0,0,0} },
-		{ {{x+L,y+L,z},		{x+L,y+L,z+L},	{x+L,y,z}},		{0,0,0} },
-		{ {{x+L,y,z},		{x+L,y+L,z+L},	{x+L,y,z+L}},	{0,0,0} },
-		{ {{x,y+L,z},		{x+L,y+L,z},	{x,y,z}},		{0,0,0} },
-		{ {{x,y,z},			{x+L,y+L,z},	{x+L,y,z}},		{0,0,0} },
-		{ {{x+L,y+L,z+L},	{x+L,y+L,z},	{x,y+L,z+L}},	{0,0,0} },
-		{ {{x,y+L,z+L},		{x+L,y+L,z},	{x,y+L,z}},		{0,0,0} },
-		{ {{x+L,y,z},		{x+L,y,z+L},	{x,y,z}},		{0,0,0} },
-		{ {{x,y,z},			{x+L,y,z+L},	{x,y,z+L}},		{0,0,0} }
-	};
-	*/
 	{
 		{ {{0,1,1},		{0,1,0},	{0,0,1}},		{0,0,0} },
 		{ {{0,0,1},		{0,1,0},	{0,0,0}},		{0,0,0} },
@@ -52,7 +43,11 @@ int Cube::execute(const std::map<std::string, std::string>& args) {
 		{ {{0,0,0},		{1,0,1},	{0,0,1}},		{0,0,0} }
 	};
 	scale(cubeMesh, origin, L);		
-	cube.write(cubeMesh, "C:\\Users\\mc dondo\\3D Objects\\cube.stl");// вставить переменную
+	//"C:\\Users\\mc dondo\\3D Objects\\sphere.stl"
+	cube.write(cubeMesh, filepath);// вставить переменную
+	std::cout << "A tessellated cube is created with the side length " << L 
+		<< " at the point (" <<origin.x << "," << origin.y << "," << origin.z 
+		<< "), and is written to an ASCII STL file with the full path: "<<filepath<<std::endl;
 	system("pause");
 	return 0;
 }
