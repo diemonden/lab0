@@ -74,7 +74,7 @@ int Sphere::execute(const std::map<std::string, std::string>& args) {
 	//https://stackoverflow.com/questions/17705621/algorithm-for-a-geodesic-sphere
 	//http://www.hugi.scene.org/online/coding/hugi%2027%20-%20coding%20corner%20polaris%20sphere%20tessellation%20101.htm
 	//http://www.opengl.org.ru/docs/pg/0208.html
-	sphere.write(sphereMesh, "C:\\Users\\mc dondo\\3D Objects\\sphere.stl");// вставить переменную
+	sphere.write(sphereMesh, filepath);// вставить переменную
 	std::cout << "A tessellated sphere is created with the radius "<< R 
 		<< " at the point (" << CENTER.x << "," << CENTER.y << "," << CENTER.z
 		<< "), and is written to an ASCII STL file with the full path: " << filepath << std::endl;
